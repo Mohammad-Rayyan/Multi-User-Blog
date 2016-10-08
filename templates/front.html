@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% for p in posts %}
+  	{% if user and (user.key().id() == p.userID) %}
+	  	<div class="post-setting"> 
+	        <a class="login-link" href="/deletePost?postId={{p.key().id()}}">delete</a>
+	        |
+	        <a class="login-link" href="/editPost?postId={{p.key().id()}}">edit</a>
+	    </div>
+	{% endif %}
+    {{ p.render() | safe }}
+    {% if user and not (user.key().id() == p.userID) %}
+	    <div class="post-like">
+		{% if not (user.key().id() in p.likeList) %}
+		    <a class="login-link" href="/like?postId={{p.key().id()}}">like</a>
+		{% else %}
+		    <a class="login-link" href="/unlike?postId={{p.key().id()}}">unlike</a>
+		{% endif %}
+	    </div>
+	{% endif %}
+	{% if p.commentList %}
+	<ul class="commentList">
+		{% for c in p.commentList %}
+		<li>{{c}}</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	{% if user and not (user.key().id() == p.userID) %}
+		<form class="comment" method="post" action="/comment/{{p.key().id()}}">
+			<input type="text" name="comment">
+			<input type="submit" value="comment">
+		</form>
+	{% endif %}
+    <br><br>
+  {% endfor %}
+{% endblock %}
